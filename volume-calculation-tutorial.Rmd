@@ -23,7 +23,7 @@ Depending on the question we wish to tackle we will have to set up our time seri
 
 ## The data
   
-You can access the simulated data in .csv format from this github page, along with all of the code from this example. The data set contains 500 observations with two variables: `arrival_times` representing arrival times and `depart_times`, representing departure times. 
+You can access the simulated data in .csv format from this [github page](https://github.com/LKS-CHART/calculating_ed_volumes), along with all of the code from this example. The data set contains 500 observations with two variables: `arrival_times` representing arrival times and `depart_times`, representing departure times. 
 
 
 ```{r, warning = F, message = F}
