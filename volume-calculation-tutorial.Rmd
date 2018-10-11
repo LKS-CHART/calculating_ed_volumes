@@ -45,23 +45,21 @@ ed_data <- read_csv('simulated_ed_data.csv') %>%
 
 ## Calculating Arrival Volumes
 
-Arrival volumes can be calculated by counting the number of rows of data within a specified time window (hour, day, week, etc...). Functions from the `lubridate` package make this an especially straight forward task. Below, we will calculate the number of arrivals  per hour  and plot the results using `ggplot`
+Arrival volumes can be calculated by counting the number of rows of data within a specified time window (hour, day, week, etc...). Functions from the `lubridate` package make this an especially straight forward task. Below, we will calculate the number of arrivals  per hour  and plot the results using `ggplot`. We can use the `lubridate::floor_date()` function to floor each arrival
+time to the nearest hour. Then we can simply count the floored timestamp variable
 
 ```{r, echo}
 # calculate volumes per minute
 volumes_hour <- ed_data %>% 
-  group_by(year = year(arrival_times),
-           month = month(arrival_times),
-           day = day(arrival_times),
-           hour = hour(arrival_times)) %>% 
-  summarise(volume = n()) %>% 
-  mutate(timestamp = ymd_h(paste(year, month, day, hour))) %>% 
+  mutate(timestamp = floor_date(arrival_times, unit = 'hour')) %>% 
+  count(timestamp) %>% 
   print()
 
 volumes_hour %>% 
-  ggplot(aes(timestamp, volume)) + 
+  ggplot(aes(timestamp, n)) + 
   geom_line() + 
-  xlab('date') +
+  xlab('Date') +
+  ylab('Volume')
   ggtitle('Emergent Department Arrivals Per Hour') +
   coord_cartesian(ylim = c(0, 20)) +
   scale_y_continuous(breaks = seq(0,20, 2))
@@ -74,15 +72,9 @@ It may be the case that some intervals in your data won't have any observations 
 ```{r}
 
 volumes_minute <- ed_data %>% 
-  group_by(year = year(arrival_times),
-           month = month(arrival_times),
-           day = day(arrival_times),
-           hour = hour(arrival_times),
-           minute = minute(arrival_times)) %>% 
-  summarise(volume = n()) %>% 
-  mutate(timestamp = ymd_hm(paste(year, month, day, hour, minute))) %>% 
-  ungroup() %>% 
-  select(timestamp, volume) %>% 
+  mutate(timestamp = floor_date(arrival_times, unit = 'minute')) %>% 
+  count(timestamp) %>% 
+  select(timestamp, volume = n) %>% 
   print()
 
 # note there are no arrivals between  00:05 and 00:15
